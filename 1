@@ -58,19 +58,13 @@ void setup() {
 }
 
 void loop() {
-  // wait a few seconds between measurements.
-  //delay(2000);
-
-  // read humidity
+  
   int humi  = dht11.readHumidity();
-  // read temperature as Celsius
   int tempC = dht11.readTemperature();
-  // read temperature as Fahrenheit
   float tempF = dht11.readTemperature(true);
 
-  // check if any reads failed
+  
   if (isnan(humi) || isnan(tempC) || isnan(tempF)) {
-    //Serial.println("Failed to read from DHT11 sensor!");}
     paint(5 , 0, 0 ,0 , 0); }
     
     else {
@@ -81,6 +75,5 @@ void loop() {
       int v3 = humi%10;
       int v4 = (humi - v3)/10;
     paint(5 , v4 , v3 ,v2 , v1);
-    //Serial.print(tempC);
   }
 }
