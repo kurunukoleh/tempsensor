@@ -1,0 +1,92 @@
+/*
+ * Created by ArduinoGetStarted.com
+ *
+ * This example code is in the public domain
+ *
+ * Tutorial page: https://arduinogetstarted.com/tutorials/arduino-dht11
+ */
+
+#include "DHT.h"
+#define DHT11_PIN 2
+
+DHT dht11(DHT11_PIN, DHT11);
+
+void render( int num ,bool point , bool ce1 , bool ce2 , bool ce3 , bool ce4){
+  byte smbl;
+
+  if(num == 0){ smbl = 0b11111100;}
+   if ( num == 1){ smbl = 0b00001100;}
+   if ( num == 2){ smbl = 0b11011010;}
+   if ( num == 3){ smbl = 0b11110010;}
+   if ( num == 4){ smbl = 0b01100110;}
+   if ( num == 5){ smbl = 0b10110110;}
+   if ( num == 6){ smbl = 0b10111110;}
+   if ( num == 7){ smbl = 0b11100000;}
+   if ( num == 8){ smbl =  0b11111110;}
+   if ( num == 9) { smbl = 0b11110110;}
+   else{smbl == 0b10011100;}
+
+   if(point){smbl += 1;}
+   
+   digitalWrite(10 , LOW);
+   shiftOut(12  , 11  , LSBFIRST  , smbl);
+   digitalWrite(10 , HIGH);
+
+   digitalWrite(3 , !ce1);
+   digitalWrite(4 , !ce2);
+   digitalWrite(5 , !ce3);
+   digitalWrite(6 , !ce4);
+   
+}
+
+void paint( int t , int c1 , int c2 , int c3 , int c4){
+    delay(t);
+    render(c1 , 0 , 1 , 0 ,0 ,0);
+    delay(t);
+    render(c2 , 1 , 0 , 1 ,0 ,0);
+    delay(t);
+    render(c3 , 0 , 0 , 0 ,1 ,0);
+    delay(t);
+    render(c4 , 0 , 0 , 0 ,0 ,1);
+  }
+
+
+void setup() {
+  Serial.begin(9600);
+  dht11.begin(); // initialize the sensor
+  
+  for(int i1 = 3 ; i1 <= 6 ; i1++){
+        pinMode(i1 , OUTPUT);
+      }
+  for(int i2 = 10 ; i2 < 13 ; i2++){
+        pinMode(i2 , OUTPUT);
+      }                          
+}
+
+void loop() {
+  // wait a few seconds between measurements.
+  //delay(2000);
+
+  // read humidity
+  int humi  = dht11.readHumidity();
+  // read temperature as Celsius
+  int tempC = dht11.readTemperature();
+  // read temperature as Fahrenheit
+  float tempF = dht11.readTemperature(true);
+
+  // check if any reads failed
+  if (isnan(humi) || isnan(tempC) || isnan(tempF)) {
+    //Serial.println("Failed to read from DHT11 sensor!");}
+    paint(5 , 0, 0 ,0 , 0); }
+    
+    else {
+      tempC = tempC - tempC%1;
+      humi = humi - humi%1;
+      int v1 = tempC%10;
+      int v2 = (tempC - v1)/10;
+      int v3 = humi%10;
+      int v4 = (humi - v3)/10;
+    paint(5 , v4 , v3 ,v2 , v1);
+    //Serial.print(tempC);
+  }
+}
